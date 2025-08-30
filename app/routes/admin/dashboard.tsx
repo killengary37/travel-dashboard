@@ -16,6 +16,7 @@ import {ColumnDirective, ColumnsDirective, GridComponent, Inject} from "@syncfus
 import {tripXAxis, tripyAxis, userXAxis, useryAxis} from "~/constants";
 import {redirect} from "react-router";
 
+// Fetches all necessary data for the dashboard client-side
 export const clientLoader = async () => {
     const [
         user,
@@ -33,12 +34,14 @@ export const clientLoader = async () => {
         await getAllUsers(4, 0),
     ])
 
+    // Normalize trip data with necessary formatting
     const allTrips = trips.allTrips.map(({ $id, tripDetails, imageUrls }) => ({
         id: $id,
         ...parseTripData(tripDetails),
         imageUrls: imageUrls ?? []
     }))
 
+    // Normalize user data and provide fallback count if not available
     const mappedUsers: UsersItineraryCount[] = allUsers.users.map((user) => ({
         imageUrl: user.imageUrl,
         name: user.name,
@@ -55,17 +58,23 @@ export const clientLoader = async () => {
     }
 }
 
+/**
+ *  Main Dashboard Component
+ *  @param loaderData Preloader data from the clientLoader function
+ */
 
 const Dashboard = ({ loaderData }: Route.ComponentProps) => {
     const user = loaderData.user as User | null;
     const { dashboardStats, allTrips, userGrowth, tripsByTravelStyle, allUsers } = loaderData;
 
+    // Format trip data for rendering in data grid
     const trips = allTrips.map((trip) => ({
         imageUrl: trip.imageUrls[0],
         name: trip.name,
         interest: trip.interests,
     }))
 
+    // Configuration for user and trip grids
     const usersAndTrips = [
         {
             title: 'Latest user signups',
@@ -88,6 +97,7 @@ const Dashboard = ({ loaderData }: Route.ComponentProps) => {
                 description="Track activity, trends and popular destinations in real time"
             />
 
+            {/* Key stats: Total users, trips, active users */}
             <section className="flex flex-col gap-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
                     <StatsCard
@@ -110,6 +120,8 @@ const Dashboard = ({ loaderData }: Route.ComponentProps) => {
                     />
                 </div>
             </section>
+
+            {/* Recent Trips section */}
             <section className="container">
                 <h1 className="text-xl font-semibold text-dark-100">Created Trips</h1>
 
@@ -128,6 +140,7 @@ const Dashboard = ({ loaderData }: Route.ComponentProps) => {
                 </div>
             </section>
 
+            {/* Analytics charts: user growth and trip trends */}
             <section className="grid grid-cols-1 lg:grid-cols-2 gap-5">
                 <ChartComponent
                     id="chart-1"
@@ -161,6 +174,7 @@ const Dashboard = ({ loaderData }: Route.ComponentProps) => {
                     </SeriesCollectionDirective>
                 </ChartComponent>
 
+                {/* Trips by travel style chart */}
                 <ChartComponent
                     id="chart-2"
                     primaryXAxis={tripXAxis}
@@ -184,6 +198,7 @@ const Dashboard = ({ loaderData }: Route.ComponentProps) => {
                 </ChartComponent>
             </section>
 
+            {/* Grids: recent users and categorized trips */}
             <section className="user-trip wrapper">
                 {usersAndTrips.map(({ title, dataSource, field, headerText}, i) => (
                     <div key={i} className="flex flex-col gap-5">

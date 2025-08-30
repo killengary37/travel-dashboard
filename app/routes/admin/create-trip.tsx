@@ -10,10 +10,15 @@ import {ButtonComponent} from "@syncfusion/ej2-react-buttons";
 import {account} from "~/appwrite/client";
 import {useNavigate} from "react-router";
 
+/**
+ * Loader function that fetches all country data from a public API.
+ * This data is used to populate the country dropdown in the form
+ */
 export const loader = async () => {
     const response = await fetch('https://restcountries.com/v3.1/all');
     const data = await response.json();
 
+    // Transform API data into a structure suitable for the form
     return data.map((country: any) => ({
         name: country.flag + country.name.common,
         coordinates: country.latlng,
@@ -26,6 +31,7 @@ const CreateTrip = ({ loaderData }: Route.ComponentProps ) => {
     const countries = loaderData as Country[];
     const navigate = useNavigate();
 
+    // Form state management
     const [formData, setFormData] = useState<TripFormData>({
         country: countries[0]?.name || '',
         travelStyle: '',
@@ -37,6 +43,10 @@ const CreateTrip = ({ loaderData }: Route.ComponentProps ) => {
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
+    /**
+     * Handles form submission to create a new trip
+     * validates form inputs and sends data to the backend.
+     */
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setLoading(true);
@@ -91,14 +101,18 @@ const CreateTrip = ({ loaderData }: Route.ComponentProps ) => {
         }
     };
 
+    // Handles updates to form fields
     const handleChange = (key: keyof TripFormData, value: string | number)  => {
         setFormData({ ...formData, [key]: value})
     }
+
+    // Format countries for ComboBox dropdown
     const countryData = countries.map((country) => ({
         text: country.name,
         value: country.value,
     }))
 
+    // Data for highlighting selected country on the map
     const mapData = [
         {
             country: formData.country,

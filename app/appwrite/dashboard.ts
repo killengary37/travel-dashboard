@@ -12,12 +12,23 @@ type FilterByDate = (
     end?: string
 ) => number;
 
+/**
+ * Gather key user and trip statistics for the dashboard, including:
+ * - Total Users
+ * - New users this month vs last month
+ * - Users roles and their growth
+ * - Total trips
+ * - Trips created this month vs last month
+ */
 export const getUsersAndTripsStats = async (): Promise<DashboardStats> => {
     const d = new Date();
+
+    // Calculate time ranges
     const startCurrent = new Date(d.getFullYear(), d.getMonth(), 1).toISOString();
     const startPrev = new Date(d.getFullYear(), d.getMonth() -1, 1).toISOString();
     const endPrev = new Date(d.getFullYear(), d.getMonth(), 0).toISOString();
 
+    // Fetch all user and trip documents concurrently
     const [users, trips] = await Promise.all([
         database.listDocuments(
             appwriteConfig.databaseId,
@@ -29,6 +40,9 @@ export const getUsersAndTripsStats = async (): Promise<DashboardStats> => {
         ),
     ])
 
+    /**
+     *  Filters document by a given date field and date range
+     */
     const filterByDate: FilterByDate = (items, key, start, end) => items.filter((item) => (
         item[key] >= start && (!end || item[key] <= end)
     )).length;
@@ -86,6 +100,10 @@ export const getUsersAndTripsStats = async (): Promise<DashboardStats> => {
     }
 }
 
+/**
+ * Aggregates user sign-up counts per day for charting growth trends
+ * @returns Array of objects representing daily user sign-up counts.
+ */
 export const getUserGrowthPerDay = async () => {
     const users = await database.listDocuments(
         appwriteConfig.databaseId,
@@ -105,12 +123,17 @@ export const getUserGrowthPerDay = async () => {
         {}
     );
 
+    // Convert aggregated object into array format
     return Object.entries(userGrowth).map(([day, count]) => ({
         count: Number(count),
         day,
     }));
 };
 
+/**
+ * Aggregates trips created per day for tracking growth and usage
+ * @returns Array of objects representing daily trips creation counts.
+ */
 export const getTripsCreatedPerDay = async () => {
     const trips = await database.listDocuments(
         appwriteConfig.databaseId,
@@ -136,6 +159,11 @@ export const getTripsCreatedPerDay = async () => {
     }));
 };
 
+/**
+ *  Analyzes trips by their travel style.
+ *  relies on a helper to parse trip details safely
+ *  @returns Array of objects representing count per travel style.
+ */
 export const getTripsByTravelStyle = async () => {
     const trips = await database.listDocuments(
         appwriteConfig.databaseId,

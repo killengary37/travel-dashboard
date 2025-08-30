@@ -3,11 +3,12 @@ import {sidebarItems} from "~/constants";
 import {cn} from "~/lib/utils";
 import {logoutUser} from "~/appwrite/auth";
 
-
+// Navigation sidebar component
 const NavItems = ({handleClick}: { handleClick?: () => void}) => {
    const user = useLoaderData();
    const navigate= useNavigate();
 
+    // Handle logout: call auth logout function and redirect to sign-in page
    const handleLogout = async () => {
        await logoutUser();
        navigate('/sign-in')
@@ -15,13 +16,15 @@ const NavItems = ({handleClick}: { handleClick?: () => void}) => {
 
     return (
         <section className="nav-items">
+            {/* Logo and app title, links to homepage */}
             <Link to='/' className="link-logo">
-                <img src="/assets/icons/logo.svg" alt="logo" className="size-[30px]"/>
-                <h1>Travel Zoom</h1>
+                <img src="/assets/icons/logo2.svg" alt="logo" className="size-[30px]"/>
+                <h1>AI-Ventures</h1>
             </Link>
 
             <div className="container">
                 <nav>
+                    {/* Render each sidebar link from config */}
                     {sidebarItems.map(({id, href, icon, label}) => (
                         <NavLink to={href} key={id}>
                             {({ isActive}: {isActive: boolean}) => (
@@ -40,6 +43,7 @@ const NavItems = ({handleClick}: { handleClick?: () => void}) => {
                     ))}
                 </nav>
 
+                {/* Sidebar footer: displays user profile and logout */}
                 <footer className="nav-footer">
                     <img src={user?.imageUrl || '/assets/images/david.webp'} alt={user?.name || 'David'} referrerPolicy="no-referrer" />
 
@@ -48,6 +52,7 @@ const NavItems = ({handleClick}: { handleClick?: () => void}) => {
                         <p>{user?.email}</p>
                     </article>
 
+                    {/* Logout button */}
                     <button
                        onClick={handleLogout}
                        className="cursor-pointer"

@@ -5,12 +5,17 @@ import {MobileSidebar, NavItems} from "../../../components";
 import {account} from "~/appwrite/client";
 import {getExistingUser, storeUserData} from "~/appwrite/auth";
 
+/**
+ * Loader function.. Verifying the authenticated user and redirects based on their status
+ */
 export async function clientLoader() {
     try {
         const user = await account.get();
 
+        // if no valid user ID is found, redirect to sign-in page
         if(!user.$id) return redirect('/sign-in');
 
+        //check if the user exists in the database
         const existingUser = await getExistingUser(user.$id)
         if(existingUser?.status === 'user') {
             return redirect('/')
@@ -23,6 +28,10 @@ export async function clientLoader() {
     }
 }
 
+/**
+ * Admin Layout
+ * Provides a sidebar navigation and a content area for nested routes
+ */
 const AdminLayout = () => {
     return (
         <div className="admin-layout">
