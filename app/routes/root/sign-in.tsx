@@ -23,13 +23,13 @@ const SignIn = () => {
                     <header>
                       <Link to="/">
                           <img
-                              src="/assets/icons/logo.svg"
+                              src="/assets/icons/logo2.svg"
                               alt="Logo"
                               className="size-[30px]"
                           />
                       </Link>
 
-                        <h1 className="p-28-bold text-dark-100">Travel Zoom</h1>
+                        <h1 className="p-28-bold text-dark-100">AI-Venturer</h1>
                     </header>
 
                     <article>

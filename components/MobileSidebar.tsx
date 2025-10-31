@@ -17,7 +17,7 @@ const MobileSidebar = () => {
             <header>
                 <Link to="/">
                     <img
-                        src="/assets/icons/logo.svg"
+                        src="/assets/icons/logo2.svg"
                         alt="Logo"
                         className="size-[30px]"
                     />
